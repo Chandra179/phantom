@@ -25,6 +25,8 @@ const (
 	ComputeService_AbnormalReturn_FullMethodName           = "/compute.ComputeService/AbnormalReturn"
 	ComputeService_CumulativeAbnormalReturn_FullMethodName = "/compute.ComputeService/CumulativeAbnormalReturn"
 	ComputeService_TTestOneSample_FullMethodName           = "/compute.ComputeService/TTestOneSample"
+	ComputeService_EuclideanDistance_FullMethodName        = "/compute.ComputeService/EuclideanDistance"
+	ComputeService_DTWDistance_FullMethodName              = "/compute.ComputeService/DTWDistance"
 )
 
 // ComputeServiceClient is the client API for ComputeService service.
@@ -37,6 +39,8 @@ type ComputeServiceClient interface {
 	AbnormalReturn(ctx context.Context, in *AbnormalReturnRequest, opts ...grpc.CallOption) (*AbnormalReturnResponse, error)
 	CumulativeAbnormalReturn(ctx context.Context, in *CARRequest, opts ...grpc.CallOption) (*CARResponse, error)
 	TTestOneSample(ctx context.Context, in *TTestRequest, opts ...grpc.CallOption) (*TTestResponse, error)
+	EuclideanDistance(ctx context.Context, in *EuclideanDistanceRequest, opts ...grpc.CallOption) (*EuclideanDistanceResponse, error)
+	DTWDistance(ctx context.Context, in *DTWDistanceRequest, opts ...grpc.CallOption) (*DTWDistanceResponse, error)
 }
 
 type computeServiceClient struct {
@@ -107,6 +111,26 @@ func (c *computeServiceClient) TTestOneSample(ctx context.Context, in *TTestRequ
 	return out, nil
 }
 
+func (c *computeServiceClient) EuclideanDistance(ctx context.Context, in *EuclideanDistanceRequest, opts ...grpc.CallOption) (*EuclideanDistanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EuclideanDistanceResponse)
+	err := c.cc.Invoke(ctx, ComputeService_EuclideanDistance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *computeServiceClient) DTWDistance(ctx context.Context, in *DTWDistanceRequest, opts ...grpc.CallOption) (*DTWDistanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DTWDistanceResponse)
+	err := c.cc.Invoke(ctx, ComputeService_DTWDistance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ComputeServiceServer is the server API for ComputeService service.
 // All implementations must embed UnimplementedComputeServiceServer
 // for forward compatibility.
@@ -117,6 +141,8 @@ type ComputeServiceServer interface {
 	AbnormalReturn(context.Context, *AbnormalReturnRequest) (*AbnormalReturnResponse, error)
 	CumulativeAbnormalReturn(context.Context, *CARRequest) (*CARResponse, error)
 	TTestOneSample(context.Context, *TTestRequest) (*TTestResponse, error)
+	EuclideanDistance(context.Context, *EuclideanDistanceRequest) (*EuclideanDistanceResponse, error)
+	DTWDistance(context.Context, *DTWDistanceRequest) (*DTWDistanceResponse, error)
 	mustEmbedUnimplementedComputeServiceServer()
 }
 
@@ -144,6 +170,12 @@ func (UnimplementedComputeServiceServer) CumulativeAbnormalReturn(context.Contex
 }
 func (UnimplementedComputeServiceServer) TTestOneSample(context.Context, *TTestRequest) (*TTestResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method TTestOneSample not implemented")
+}
+func (UnimplementedComputeServiceServer) EuclideanDistance(context.Context, *EuclideanDistanceRequest) (*EuclideanDistanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method EuclideanDistance not implemented")
+}
+func (UnimplementedComputeServiceServer) DTWDistance(context.Context, *DTWDistanceRequest) (*DTWDistanceResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DTWDistance not implemented")
 }
 func (UnimplementedComputeServiceServer) mustEmbedUnimplementedComputeServiceServer() {}
 func (UnimplementedComputeServiceServer) testEmbeddedByValue()                        {}
@@ -274,6 +306,42 @@ func _ComputeService_TTestOneSample_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ComputeService_EuclideanDistance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EuclideanDistanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ComputeServiceServer).EuclideanDistance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ComputeService_EuclideanDistance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ComputeServiceServer).EuclideanDistance(ctx, req.(*EuclideanDistanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ComputeService_DTWDistance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DTWDistanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ComputeServiceServer).DTWDistance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ComputeService_DTWDistance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ComputeServiceServer).DTWDistance(ctx, req.(*DTWDistanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ComputeService_ServiceDesc is the grpc.ServiceDesc for ComputeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +372,14 @@ var ComputeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TTestOneSample",
 			Handler:    _ComputeService_TTestOneSample_Handler,
+		},
+		{
+			MethodName: "EuclideanDistance",
+			Handler:    _ComputeService_EuclideanDistance_Handler,
+		},
+		{
+			MethodName: "DTWDistance",
+			Handler:    _ComputeService_DTWDistance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

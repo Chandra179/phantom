@@ -621,6 +621,206 @@ func (x *TTestResponse) GetTStatistic() float64 {
 	return 0
 }
 
+type EuclideanDistanceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	A             []float64              `protobuf:"fixed64,1,rep,packed,name=a,proto3" json:"a,omitempty"`
+	B             []float64              `protobuf:"fixed64,2,rep,packed,name=b,proto3" json:"b,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EuclideanDistanceRequest) Reset() {
+	*x = EuclideanDistanceRequest{}
+	mi := &file_compute_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EuclideanDistanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EuclideanDistanceRequest) ProtoMessage() {}
+
+func (x *EuclideanDistanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_compute_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EuclideanDistanceRequest.ProtoReflect.Descriptor instead.
+func (*EuclideanDistanceRequest) Descriptor() ([]byte, []int) {
+	return file_compute_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *EuclideanDistanceRequest) GetA() []float64 {
+	if x != nil {
+		return x.A
+	}
+	return nil
+}
+
+func (x *EuclideanDistanceRequest) GetB() []float64 {
+	if x != nil {
+		return x.B
+	}
+	return nil
+}
+
+type EuclideanDistanceResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Distance      float64                `protobuf:"fixed64,1,opt,name=distance,proto3" json:"distance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EuclideanDistanceResponse) Reset() {
+	*x = EuclideanDistanceResponse{}
+	mi := &file_compute_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EuclideanDistanceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EuclideanDistanceResponse) ProtoMessage() {}
+
+func (x *EuclideanDistanceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_compute_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EuclideanDistanceResponse.ProtoReflect.Descriptor instead.
+func (*EuclideanDistanceResponse) Descriptor() ([]byte, []int) {
+	return file_compute_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *EuclideanDistanceResponse) GetDistance() float64 {
+	if x != nil {
+		return x.Distance
+	}
+	return 0
+}
+
+type DTWDistanceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	A             []float64              `protobuf:"fixed64,1,rep,packed,name=a,proto3" json:"a,omitempty"`
+	B             []float64              `protobuf:"fixed64,2,rep,packed,name=b,proto3" json:"b,omitempty"`
+	Band          uint32                 `protobuf:"varint,3,opt,name=band,proto3" json:"band,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DTWDistanceRequest) Reset() {
+	*x = DTWDistanceRequest{}
+	mi := &file_compute_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DTWDistanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DTWDistanceRequest) ProtoMessage() {}
+
+func (x *DTWDistanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_compute_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DTWDistanceRequest.ProtoReflect.Descriptor instead.
+func (*DTWDistanceRequest) Descriptor() ([]byte, []int) {
+	return file_compute_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DTWDistanceRequest) GetA() []float64 {
+	if x != nil {
+		return x.A
+	}
+	return nil
+}
+
+func (x *DTWDistanceRequest) GetB() []float64 {
+	if x != nil {
+		return x.B
+	}
+	return nil
+}
+
+func (x *DTWDistanceRequest) GetBand() uint32 {
+	if x != nil {
+		return x.Band
+	}
+	return 0
+}
+
+type DTWDistanceResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Distance      float64                `protobuf:"fixed64,1,opt,name=distance,proto3" json:"distance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DTWDistanceResponse) Reset() {
+	*x = DTWDistanceResponse{}
+	mi := &file_compute_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DTWDistanceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DTWDistanceResponse) ProtoMessage() {}
+
+func (x *DTWDistanceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_compute_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DTWDistanceResponse.ProtoReflect.Descriptor instead.
+func (*DTWDistanceResponse) Descriptor() ([]byte, []int) {
+	return file_compute_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DTWDistanceResponse) GetDistance() float64 {
+	if x != nil {
+		return x.Distance
+	}
+	return 0
+}
+
 var File_compute_proto protoreflect.FileDescriptor
 
 const file_compute_proto_rawDesc = "" +
@@ -662,14 +862,27 @@ const file_compute_proto_rawDesc = "" +
 	"\asamples\x18\x01 \x03(\x01R\asamples\"0\n" +
 	"\rTTestResponse\x12\x1f\n" +
 	"\vt_statistic\x18\x01 \x01(\x01R\n" +
-	"tStatistic2\xdb\x03\n" +
+	"tStatistic\"6\n" +
+	"\x18EuclideanDistanceRequest\x12\f\n" +
+	"\x01a\x18\x01 \x03(\x01R\x01a\x12\f\n" +
+	"\x01b\x18\x02 \x03(\x01R\x01b\"7\n" +
+	"\x19EuclideanDistanceResponse\x12\x1a\n" +
+	"\bdistance\x18\x01 \x01(\x01R\bdistance\"D\n" +
+	"\x12DTWDistanceRequest\x12\f\n" +
+	"\x01a\x18\x01 \x03(\x01R\x01a\x12\f\n" +
+	"\x01b\x18\x02 \x03(\x01R\x01b\x12\x12\n" +
+	"\x04band\x18\x03 \x01(\rR\x04band\"1\n" +
+	"\x13DTWDistanceResponse\x12\x1a\n" +
+	"\bdistance\x18\x01 \x01(\x01R\bdistance2\x81\x05\n" +
 	"\x0eComputeService\x12Q\n" +
 	"\x0ePercentChanges\x12\x1e.compute.PercentChangesRequest\x1a\x1f.compute.PercentChangesResponse\x12H\n" +
 	"\vBuildWindow\x12\x1b.compute.BuildWindowRequest\x1a\x1c.compute.BuildWindowResponse\x12Q\n" +
 	"\x0eOLSMarketModel\x12\x1e.compute.OLSMarketModelRequest\x1a\x1f.compute.OLSMarketModelResponse\x12Q\n" +
 	"\x0eAbnormalReturn\x12\x1e.compute.AbnormalReturnRequest\x1a\x1f.compute.AbnormalReturnResponse\x12E\n" +
 	"\x18CumulativeAbnormalReturn\x12\x13.compute.CARRequest\x1a\x14.compute.CARResponse\x12?\n" +
-	"\x0eTTestOneSample\x12\x15.compute.TTestRequest\x1a\x16.compute.TTestResponseB\x17Z\x15phantom/gen/computepbb\x06proto3"
+	"\x0eTTestOneSample\x12\x15.compute.TTestRequest\x1a\x16.compute.TTestResponse\x12Z\n" +
+	"\x11EuclideanDistance\x12!.compute.EuclideanDistanceRequest\x1a\".compute.EuclideanDistanceResponse\x12H\n" +
+	"\vDTWDistance\x12\x1b.compute.DTWDistanceRequest\x1a\x1c.compute.DTWDistanceResponseB\x17Z\x15phantom/gen/computepbb\x06proto3"
 
 var (
 	file_compute_proto_rawDescOnce sync.Once
@@ -683,20 +896,24 @@ func file_compute_proto_rawDescGZIP() []byte {
 	return file_compute_proto_rawDescData
 }
 
-var file_compute_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_compute_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_compute_proto_goTypes = []any{
-	(*PercentChangesRequest)(nil),  // 0: compute.PercentChangesRequest
-	(*PercentChangesResponse)(nil), // 1: compute.PercentChangesResponse
-	(*BuildWindowRequest)(nil),     // 2: compute.BuildWindowRequest
-	(*BuildWindowResponse)(nil),    // 3: compute.BuildWindowResponse
-	(*OLSMarketModelRequest)(nil),  // 4: compute.OLSMarketModelRequest
-	(*OLSMarketModelResponse)(nil), // 5: compute.OLSMarketModelResponse
-	(*AbnormalReturnRequest)(nil),  // 6: compute.AbnormalReturnRequest
-	(*AbnormalReturnResponse)(nil), // 7: compute.AbnormalReturnResponse
-	(*CARRequest)(nil),             // 8: compute.CARRequest
-	(*CARResponse)(nil),            // 9: compute.CARResponse
-	(*TTestRequest)(nil),           // 10: compute.TTestRequest
-	(*TTestResponse)(nil),          // 11: compute.TTestResponse
+	(*PercentChangesRequest)(nil),     // 0: compute.PercentChangesRequest
+	(*PercentChangesResponse)(nil),    // 1: compute.PercentChangesResponse
+	(*BuildWindowRequest)(nil),        // 2: compute.BuildWindowRequest
+	(*BuildWindowResponse)(nil),       // 3: compute.BuildWindowResponse
+	(*OLSMarketModelRequest)(nil),     // 4: compute.OLSMarketModelRequest
+	(*OLSMarketModelResponse)(nil),    // 5: compute.OLSMarketModelResponse
+	(*AbnormalReturnRequest)(nil),     // 6: compute.AbnormalReturnRequest
+	(*AbnormalReturnResponse)(nil),    // 7: compute.AbnormalReturnResponse
+	(*CARRequest)(nil),                // 8: compute.CARRequest
+	(*CARResponse)(nil),               // 9: compute.CARResponse
+	(*TTestRequest)(nil),              // 10: compute.TTestRequest
+	(*TTestResponse)(nil),             // 11: compute.TTestResponse
+	(*EuclideanDistanceRequest)(nil),  // 12: compute.EuclideanDistanceRequest
+	(*EuclideanDistanceResponse)(nil), // 13: compute.EuclideanDistanceResponse
+	(*DTWDistanceRequest)(nil),        // 14: compute.DTWDistanceRequest
+	(*DTWDistanceResponse)(nil),       // 15: compute.DTWDistanceResponse
 }
 var file_compute_proto_depIdxs = []int32{
 	0,  // 0: compute.ComputeService.PercentChanges:input_type -> compute.PercentChangesRequest
@@ -705,14 +922,18 @@ var file_compute_proto_depIdxs = []int32{
 	6,  // 3: compute.ComputeService.AbnormalReturn:input_type -> compute.AbnormalReturnRequest
 	8,  // 4: compute.ComputeService.CumulativeAbnormalReturn:input_type -> compute.CARRequest
 	10, // 5: compute.ComputeService.TTestOneSample:input_type -> compute.TTestRequest
-	1,  // 6: compute.ComputeService.PercentChanges:output_type -> compute.PercentChangesResponse
-	3,  // 7: compute.ComputeService.BuildWindow:output_type -> compute.BuildWindowResponse
-	5,  // 8: compute.ComputeService.OLSMarketModel:output_type -> compute.OLSMarketModelResponse
-	7,  // 9: compute.ComputeService.AbnormalReturn:output_type -> compute.AbnormalReturnResponse
-	9,  // 10: compute.ComputeService.CumulativeAbnormalReturn:output_type -> compute.CARResponse
-	11, // 11: compute.ComputeService.TTestOneSample:output_type -> compute.TTestResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	12, // 6: compute.ComputeService.EuclideanDistance:input_type -> compute.EuclideanDistanceRequest
+	14, // 7: compute.ComputeService.DTWDistance:input_type -> compute.DTWDistanceRequest
+	1,  // 8: compute.ComputeService.PercentChanges:output_type -> compute.PercentChangesResponse
+	3,  // 9: compute.ComputeService.BuildWindow:output_type -> compute.BuildWindowResponse
+	5,  // 10: compute.ComputeService.OLSMarketModel:output_type -> compute.OLSMarketModelResponse
+	7,  // 11: compute.ComputeService.AbnormalReturn:output_type -> compute.AbnormalReturnResponse
+	9,  // 12: compute.ComputeService.CumulativeAbnormalReturn:output_type -> compute.CARResponse
+	11, // 13: compute.ComputeService.TTestOneSample:output_type -> compute.TTestResponse
+	13, // 14: compute.ComputeService.EuclideanDistance:output_type -> compute.EuclideanDistanceResponse
+	15, // 15: compute.ComputeService.DTWDistance:output_type -> compute.DTWDistanceResponse
+	8,  // [8:16] is the sub-list for method output_type
+	0,  // [0:8] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -729,7 +950,7 @@ func file_compute_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_compute_proto_rawDesc), len(file_compute_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

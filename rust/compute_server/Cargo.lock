@@ -147,6 +147,7 @@ dependencies = [
  "backtesting",
  "graphic_processor",
  "prost",
+ "shape_matching",
  "tokio",
  "tonic",
  "tonic-build",
@@ -832,6 +833,10 @@ dependencies = [
  "serde_core",
  "zmij",
 ]
+
+[[package]]
+name = "shape_matching"
+version = "0.1.0"
 
 [[package]]
 name = "signal-hook-registry"

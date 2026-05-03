@@ -1,3 +1,4 @@
+use std::any::Any;
 use tonic::{transport::Server, Request, Response, Status};
 
 pub mod compute {
@@ -6,6 +7,15 @@ pub mod compute {
 
 use compute::compute_service_server::{ComputeService, ComputeServiceServer};
 use compute::*;
+
+fn panic_msg(name: &str, payload: Box<dyn Any + Send>) -> Status {
+    let detail = payload
+        .downcast_ref::<String>()
+        .map(|s| s.as_str())
+        .or_else(|| payload.downcast_ref::<&str>().copied())
+        .unwrap_or("<no message>");
+    Status::invalid_argument(format!("{name} panicked: {detail}"))
+}
 
 #[derive(Default)]
 struct ComputeServiceImpl;
@@ -21,7 +31,7 @@ impl ComputeService for ComputeServiceImpl {
         match result {
             Ok(Ok(changes)) => Ok(Response::new(PercentChangesResponse { changes })),
             Ok(Err(e)) => Err(Status::invalid_argument(e.to_string())),
-            Err(_) => Err(Status::invalid_argument("percent_changes panicked")),
+            Err(p) => Err(panic_msg("percent_changes", p)),
         }
     }
 
@@ -40,7 +50,7 @@ impl ComputeService for ComputeServiceImpl {
         });
         match result {
             Ok(window) => Ok(Response::new(BuildWindowResponse { window })),
-            Err(_) => Err(Status::invalid_argument("build_window panicked")),
+            Err(p) => Err(panic_msg("build_window", p)),
         }
     }
 
@@ -60,7 +70,7 @@ impl ComputeService for ComputeServiceImpl {
                 beta,
                 sigma_eps,
             })),
-            Err(_) => Err(Status::invalid_argument("ols_market_model panicked")),
+            Err(p) => Err(panic_msg("ols_market_model", p)),
         }
     }
 
@@ -78,7 +88,7 @@ impl ComputeService for ComputeServiceImpl {
             std::panic::catch_unwind(move || backtesting::abnormal_return(&actual, &market, alpha, beta));
         match result {
             Ok(ar) => Ok(Response::new(AbnormalReturnResponse { ar })),
-            Err(_) => Err(Status::invalid_argument("abnormal_return panicked")),
+            Err(p) => Err(panic_msg("abnormal_return", p)),
         }
     }
 
@@ -90,7 +100,7 @@ impl ComputeService for ComputeServiceImpl {
         let result = std::panic::catch_unwind(move || backtesting::cumulative_abnormal_return(&ar));
         match result {
             Ok(car) => Ok(Response::new(CarResponse { car })),
-            Err(_) => Err(Status::invalid_argument("cumulative_abnormal_return panicked")),
+            Err(p) => Err(panic_msg("cumulative_abnormal_return", p)),
         }
     }
 
@@ -102,7 +112,39 @@ impl ComputeService for ComputeServiceImpl {
         let result = std::panic::catch_unwind(move || backtesting::t_test_one_sample(&samples));
         match result {
             Ok(t_statistic) => Ok(Response::new(TTestResponse { t_statistic })),
-            Err(_) => Err(Status::invalid_argument("t_test_one_sample panicked")),
+            Err(p) => Err(panic_msg("t_test_one_sample", p)),
+        }
+    }
+
+    async fn euclidean_distance(
+        &self,
+        req: Request<EuclideanDistanceRequest>,
+    ) -> Result<Response<EuclideanDistanceResponse>, Status> {
+        let inner = req.into_inner();
+        let a = inner.a;
+        let b = inner.b;
+
+        let result = std::panic::catch_unwind(move || shape_matching::euclidean_distance(&a, &b));
+        match result {
+            Ok(distance) => Ok(Response::new(EuclideanDistanceResponse { distance })),
+            Err(p) => Err(panic_msg("euclidean_distance", p)),
+        }
+    }
+
+    async fn dtw_distance(
+        &self,
+        req: Request<DtwDistanceRequest>,
+    ) -> Result<Response<DtwDistanceResponse>, Status> {
+        let inner = req.into_inner();
+        let a = inner.a;
+        let b = inner.b;
+        let band = inner.band as usize;
+
+        let result =
+            std::panic::catch_unwind(move || shape_matching::dtw_distance(&a, &b, band));
+        match result {
+            Ok(distance) => Ok(Response::new(DtwDistanceResponse { distance })),
+            Err(p) => Err(panic_msg("dtw_distance", p)),
         }
     }
 }

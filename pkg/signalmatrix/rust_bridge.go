@@ -79,3 +79,19 @@ func (rb *RustBridge) TTestOneSample(ctx context.Context, samples []float64) (fl
 	}
 	return res.TStatistic, nil
 }
+
+func (rb *RustBridge) EuclideanDistance(ctx context.Context, a, b []float64) (float64, error) {
+	res, err := rb.client.EuclideanDistance(ctx, &pb.EuclideanDistanceRequest{A: a, B: b})
+	if err != nil {
+		return 0, err
+	}
+	return res.Distance, nil
+}
+
+func (rb *RustBridge) DTWDistance(ctx context.Context, a, b []float64, band uint32) (float64, error) {
+	res, err := rb.client.DTWDistance(ctx, &pb.DTWDistanceRequest{A: a, B: b, Band: band})
+	if err != nil {
+		return 0, err
+	}
+	return res.Distance, nil
+}

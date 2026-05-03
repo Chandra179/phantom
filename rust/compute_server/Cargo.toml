@@ -13,6 +13,7 @@ prost = "0.13"
 tokio = { version = "1", features = ["full"] }
 graphic_processor = { path = "../graphic_processor" }
 backtesting = { path = "../backtesting" }
+shape_matching = { path = "../shape_matching" }
 
 [build-dependencies]
 tonic-build = "0.12"

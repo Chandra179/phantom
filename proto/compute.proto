@@ -11,6 +11,8 @@ service ComputeService {
   rpc AbnormalReturn(AbnormalReturnRequest) returns (AbnormalReturnResponse);
   rpc CumulativeAbnormalReturn(CARRequest) returns (CARResponse);
   rpc TTestOneSample(TTestRequest) returns (TTestResponse);
+  rpc EuclideanDistance(EuclideanDistanceRequest) returns (EuclideanDistanceResponse);
+  rpc DTWDistance(DTWDistanceRequest) returns (DTWDistanceResponse);
 }
 
 message PercentChangesRequest {
@@ -62,4 +64,21 @@ message TTestRequest {
 }
 message TTestResponse {
   double t_statistic = 1;
+}
+
+message EuclideanDistanceRequest {
+  repeated double a = 1;
+  repeated double b = 2;
+}
+message EuclideanDistanceResponse {
+  double distance = 1;
+}
+
+message DTWDistanceRequest {
+  repeated double a = 1;
+  repeated double b = 2;
+  uint32 band = 3;
+}
+message DTWDistanceResponse {
+  double distance = 1;
 }

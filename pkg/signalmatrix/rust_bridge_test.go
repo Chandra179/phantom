@@ -32,6 +32,14 @@ func (m *mockComputeServer) TTestOneSample(_ context.Context, _ *pb.TTestRequest
 	return &pb.TTestResponse{TStatistic: 3.464}, nil
 }
 
+func (m *mockComputeServer) EuclideanDistance(_ context.Context, _ *pb.EuclideanDistanceRequest) (*pb.EuclideanDistanceResponse, error) {
+	return &pb.EuclideanDistanceResponse{Distance: 3.464}, nil
+}
+
+func (m *mockComputeServer) DTWDistance(_ context.Context, _ *pb.DTWDistanceRequest) (*pb.DTWDistanceResponse, error) {
+	return &pb.DTWDistanceResponse{Distance: 2.236}, nil
+}
+
 // startMockServer starts a gRPC server on an ephemeral port and returns the address.
 func startMockServer(t *testing.T) string {
 	t.Helper()
@@ -131,5 +139,33 @@ func TestRustBridge_TTestOneSample(t *testing.T) {
 
 	if result != 3.464 {
 		t.Errorf("expected 3.464, got %f", result)
+	}
+}
+
+func TestRustBridge_EuclideanDistance(t *testing.T) {
+	addr := startMockServer(t)
+	bridge := newTestBridge(t, addr)
+
+	result, err := bridge.EuclideanDistance(context.Background(), []float64{1, 2, 3}, []float64{4, 5, 6})
+	if err != nil {
+		t.Fatalf("EuclideanDistance: %v", err)
+	}
+
+	if result != 3.464 {
+		t.Errorf("expected 3.464, got %f", result)
+	}
+}
+
+func TestRustBridge_DTWDistance(t *testing.T) {
+	addr := startMockServer(t)
+	bridge := newTestBridge(t, addr)
+
+	result, err := bridge.DTWDistance(context.Background(), []float64{1, 10, 1}, []float64{10, 1, 10}, 1)
+	if err != nil {
+		t.Fatalf("DTWDistance: %v", err)
+	}
+
+	if result != 2.236 {
+		t.Errorf("expected 2.236, got %f", result)
 	}
 }

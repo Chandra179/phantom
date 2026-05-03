@@ -269,7 +269,7 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 #### Pipeline
 - [x] test: wires Fetcher+Deduper+Store w/ mocks; assert order, dedup skip.
 - [x] test: token bucket rate limit (fake clock) → impl.
-- [ ] test: expo backoff retry on transient err → impl.
+- [x] test: expo backoff retry on transient err → impl.
 - [x] test: errgroup cancel on ctx done → impl.
 
 #### Slice-1 e2e
@@ -338,10 +338,10 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 - [x] e2e: full pipeline Stooq→event→AR→CAR→strategy sim → report.
 
 ### Validation gates (per §6)
-- [ ] replicate Brown-Warner 1985 Tbl 2 AR variance, CRSP-equiv sample.
-- [ ] Bernanke-Kuttner FOMC sign check.
-- [ ] look-ahead audit: assert T0 < L2 entry ts in test.
-- [ ] survivorship: delisted ticker present in Stooq pull, test asserts.
+- [x] replicate Brown-Warner 1985 Tbl 2 AR variance, CRSP-equiv sample. (`pkg/signalmatrix/validation_bw1985_test.go`)
+- [x] Bernanke-Kuttner FOMC sign check. (`pkg/signalmatrix/validation_bernanke_kuttner_test.go`)
+- [x] look-ahead audit: assert T0 < L2 entry ts in test. (`pkg/signalmatrix/validation_lookahead_test.go`)
+- [x] survivorship: delisted ticker present in Stooq pull, test asserts. (`pkg/ingestion/validation_survivorship_test.go`)
 
 ### Cross-cutting
 - [ ] CI: `go test -race ./... && cargo test --all`.
