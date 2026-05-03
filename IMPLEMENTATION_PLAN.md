@@ -234,69 +234,69 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 ### Slice 1 — Stooq → Parquet → mean return
 
 #### shared types
-- [ ] test: `PricePoint` zero-val, `Event` equality, `AssetID` parse → impl types.
-- [ ] test: `PriceWindow.LogReturns()` known input → known output → impl.
+- [x] test: `PricePoint` zero-val, `Event` equality, `AssetID` parse → impl types.
+- [x] test: `PriceWindow.LogReturns()` known input → known output → impl.
 
 #### Fetcher iface
-- [ ] define `Fetcher` (`Fetch(ctx, AssetID, range) ([]PricePoint, error)`).
-- [ ] test: `MockFetcher` canned CSV; pipeline consumes.
-- [ ] test: `StooqFetcher` vs `httptest.Server` fixture → impl real.
-- [ ] test: malformed CSV → typed err → impl parser.
+- [x] define `Fetcher` (`Fetch(ctx, AssetID, range) ([]PricePoint, error)`).
+- [x] test: `MockFetcher` canned CSV; pipeline consumes.
+- [x] test: `StooqFetcher` vs `httptest.Server` fixture → impl real.
+- [x] test: malformed CSV → typed err → impl parser.
 
 #### Deduper iface
-- [ ] define `Deduper` (`Seen(key) bool`, `Mark(key)`).
-- [ ] test: SHA256 key stable across runs → impl `HashKey(asset,ts,src)`.
-- [ ] test: `MemDeduper` dup detect → impl `sync.Map`.
-- [ ] test: concurrent `Mark` no race (`-race`) → impl.
+- [x] define `Deduper` (`Seen(key) bool`, `Mark(key)`).
+- [x] test: SHA256 key stable across runs → impl `HashKey(asset,ts,src)`.
+- [x] test: `MemDeduper` dup detect → impl `sync.Map`.
+- [x] test: concurrent `Mark` no race (`-race`) → impl.
 
 #### Store iface
-- [ ] define `Store` (`Put([]PricePoint)`, `Get(AssetID, range) ([]PricePoint)`).
-- [ ] test: `MemStore` round-trip → impl.
-- [ ] test: `ParquetStore` write→read identity → impl `parquet-go`.
-- [ ] test: partition path `asset/year/month` → impl.
+- [x] define `Store` (`Put([]PricePoint)`, `Get(AssetID, range) ([]PricePoint)`).
+- [x] test: `MemStore` round-trip → impl.
+- [x] test: `ParquetStore` write→read identity → impl `parquet-go`.
+- [x] test: partition path `asset/year/month` → impl.
 
 #### Pipeline
-- [ ] test: wires Fetcher+Deduper+Store w/ mocks; assert order, dedup skip.
-- [ ] test: token bucket rate limit (fake clock) → impl.
+- [x] test: wires Fetcher+Deduper+Store w/ mocks; assert order, dedup skip.
+- [x] test: token bucket rate limit (fake clock) → impl.
 - [ ] test: expo backoff retry on transient err → impl.
-- [ ] test: errgroup cancel on ctx done → impl.
+- [x] test: errgroup cancel on ctx done → impl.
 
 #### Slice-1 e2e
-- [ ] integration: real Stooq HTTP (gated `-short`) → Parquet → Go mean return = manual calc.
+- [x] integration: real Stooq HTTP (gated `-short`) → Parquet → Go mean return = manual calc.
 
 ### Slice 2 — EDGAR → window → Rust AR via gRPC
 
 #### EventLookup iface
-- [ ] define `EventLookup.Find(criteria) ([]Event)`.
-- [ ] test: in-mem index by `(type,asset,ts)` → impl.
-- [ ] test: `EdgarFetcher` parse 8-K JSON fixture; `acceptedDateTime` → T0.
-- [ ] test: after-hours filing → next open T0 → impl rule.
+- [x] define `EventLookup.Find(criteria) ([]Event)`.
+- [x] test: in-mem index by `(type,asset,ts)` → impl.
+- [x] test: `EdgarFetcher` parse 8-K JSON fixture; `acceptedDateTime` → T0.
+- [x] test: after-hours filing → next open T0 → impl rule.
 
 #### WindowBuilder iface
-- [ ] define `WindowBuilder.Build(event, L1, L2) (PriceWindow, error)`.
-- [ ] test: L1=[T0-250,T0-11], L2=[T0-10,T0+10] indices → impl.
-- [ ] test: skip if <200 obs L1 (Brown-Warner) → impl.
-- [ ] test: skip if overlap prior event → impl.
-- [ ] test: skip if halt in L2 → impl.
-- [ ] test: log-returns `ln(P_t/P_{t-1})` → impl.
+- [x] define `WindowBuilder.Build(event, L1, L2) (PriceWindow, error)`.
+- [x] test: L1=[T0-250,T0-11], L2=[T0-10,T0+10] indices → impl.
+- [x] test: skip if <200 obs L1 (Brown-Warner) → impl.
+- [x] test: skip if overlap prior event → impl.
+- [x] test: skip if halt in L2 → impl.
+- [x] test: log-returns `ln(P_t/P_{t-1})` → impl.
 
 #### Rust `graphic_processor`
-- [ ] test: `percent_changes` known vec → known logret.
-- [ ] test: NaN/zero price → typed err.
-- [ ] test: `build_window` slice align → impl.
+- [x] test: `percent_changes` known vec → known logret.
+- [x] test: NaN/zero price → typed err.
+- [x] test: `build_window` slice align → impl.
 
 #### Rust `backtesting`
-- [ ] test: `ols_market_model` synth → recover known α,β,σ_ε within tol.
-- [ ] test: `abnormal_return` hand calc match.
-- [ ] test: `cumulative_abnormal_return` sum.
-- [ ] test: variance incl `(R_mt - R̄_m)²` term (Brown-Warner spec).
-- [ ] test: `t_test_one_sample` vs `scipy.stats.ttest_1samp` golden.
-- [ ] test: `bmp_test` vs published BMP example.
+- [x] test: `ols_market_model` synth → recover known α,β,σ_ε within tol.
+- [x] test: `abnormal_return` hand calc match.
+- [x] test: `cumulative_abnormal_return` sum.
+- [x] test: variance incl `(R_mt - R̄_m)²` term (Brown-Warner spec).
+- [x] test: `t_test_one_sample` vs `scipy.stats.ttest_1samp` golden.
+- [x] test: `bmp_test` vs published BMP example.
 
 #### gRPC bridge
-- [ ] test: tonic stub server → canned `ARResults`; Go client decode.
-- [ ] test: `RustBridge.ComputeAR` mock server → impl Go client.
-- [ ] integration: real Rust server + Go client; AR = Rust unit test output.
+- [x] test: tonic stub server → canned `ARResults`; Go client decode.
+- [x] test: `RustBridge.ComputeAR` mock server → impl Go client.
+- [x] integration: real Rust server + Go client; AR = Rust unit test output.
 
 ### Slice 3 — CAR aggregation + t-test
 - [ ] test: cross-sectional mean CAR over N synth events.

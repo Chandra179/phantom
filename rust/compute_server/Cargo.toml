@@ -11,6 +11,8 @@ path = "src/main.rs"
 tonic = "0.12"
 prost = "0.13"
 tokio = { version = "1", features = ["full"] }
+graphic_processor = { path = "../graphic_processor" }
+backtesting = { path = "../backtesting" }
 
 [build-dependencies]
 tonic-build = "0.12"

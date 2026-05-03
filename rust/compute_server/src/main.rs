@@ -14,37 +14,76 @@ struct ComputeServiceImpl;
 impl ComputeService for ComputeServiceImpl {
     async fn percent_changes(
         &self,
-        _req: Request<PercentChangesRequest>,
+        req: Request<PercentChangesRequest>,
     ) -> Result<Response<PercentChangesResponse>, Status> {
-        Err(Status::unimplemented("percent_changes"))
+        let prices = req.into_inner().prices;
+        let result = std::panic::catch_unwind(|| graphic_processor::percent_changes(&prices));
+        match result {
+            Ok(Ok(changes)) => Ok(Response::new(PercentChangesResponse { changes })),
+            Ok(Err(e)) => Err(Status::invalid_argument(e.to_string())),
+            Err(_) => Err(Status::invalid_argument("percent_changes panicked")),
+        }
     }
 
     async fn build_window(
         &self,
-        _req: Request<BuildWindowRequest>,
+        req: Request<BuildWindowRequest>,
     ) -> Result<Response<BuildWindowResponse>, Status> {
-        Err(Status::unimplemented("build_window"))
+        let inner = req.into_inner();
+        let all_prices = inner.all_prices;
+        let t0_index = inner.t0_index as usize;
+        let est_days = inner.est_days;
+        let event_hours = inner.event_hours;
+
+        let result = std::panic::catch_unwind(move || {
+            graphic_processor::build_window(&all_prices, t0_index, est_days, event_hours)
+        });
+        match result {
+            Ok(window) => Ok(Response::new(BuildWindowResponse { window })),
+            Err(_) => Err(Status::invalid_argument("build_window panicked")),
+        }
     }
 
     async fn abnormal_return(
         &self,
-        _req: Request<AbnormalReturnRequest>,
+        req: Request<AbnormalReturnRequest>,
     ) -> Result<Response<AbnormalReturnResponse>, Status> {
-        Err(Status::unimplemented("abnormal_return"))
+        let inner = req.into_inner();
+        let actual = inner.actual_returns;
+        let market = inner.market_returns;
+        let alpha = inner.alpha;
+        let beta = inner.beta;
+
+        let result =
+            std::panic::catch_unwind(move || backtesting::abnormal_return(&actual, &market, alpha, beta));
+        match result {
+            Ok(ar) => Ok(Response::new(AbnormalReturnResponse { ar })),
+            Err(_) => Err(Status::invalid_argument("abnormal_return panicked")),
+        }
     }
 
     async fn cumulative_abnormal_return(
         &self,
-        _req: Request<CarRequest>,
+        req: Request<CarRequest>,
     ) -> Result<Response<CarResponse>, Status> {
-        Err(Status::unimplemented("cumulative_abnormal_return"))
+        let ar = req.into_inner().ar;
+        let result = std::panic::catch_unwind(move || backtesting::cumulative_abnormal_return(&ar));
+        match result {
+            Ok(car) => Ok(Response::new(CarResponse { car })),
+            Err(_) => Err(Status::invalid_argument("cumulative_abnormal_return panicked")),
+        }
     }
 
     async fn t_test_one_sample(
         &self,
-        _req: Request<TTestRequest>,
+        req: Request<TTestRequest>,
     ) -> Result<Response<TTestResponse>, Status> {
-        Err(Status::unimplemented("t_test_one_sample"))
+        let samples = req.into_inner().samples;
+        let result = std::panic::catch_unwind(move || backtesting::t_test_one_sample(&samples));
+        match result {
+            Ok(t_statistic) => Ok(Response::new(TTestResponse { t_statistic })),
+            Err(_) => Err(Status::invalid_argument("t_test_one_sample panicked")),
+        }
     }
 }
 

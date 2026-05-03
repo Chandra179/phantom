@@ -128,5 +128,3 @@ secrets/
 # Uncomment if you want to ignore generated proto code
 # gen/
 # proto/gen/
-
-ingestion
