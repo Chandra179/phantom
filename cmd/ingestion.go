@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,8 +24,10 @@ func main() {
 	// Pipeline wiring — uses in-memory store for now.
 	// Replace store with ParquetStore for persistence.
 	store := ingestion.NewMemStore()
+	apiKey := os.Getenv("STOOQ_APIKEY")
+
 	pipe := &ingestion.Pipeline{
-		Fetcher: &ingestion.StooqFetcher{},
+		Fetcher: &ingestion.StooqFetcher{APIKey: apiKey},
 		Deduper: &ingestion.MemDeduper{},
 		Store:   store,
 		Limiter: rate.NewLimiter(rate.Every(time.Second), 5),

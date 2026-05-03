@@ -1,0 +1,5 @@
+### Get Alphabet (GOOG.US) Historical Data
+GET https://stooq.com/q/d/l/?s=GOOG.US&i=d
+
+### Get Apple (AAPL.US) Historical Data
+GET https://stooq.com/q/d/l/?s=goog.us&i=d&apikey=

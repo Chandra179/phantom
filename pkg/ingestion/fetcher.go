@@ -1,6 +1,7 @@
 package ingestion
 
 import (
+	"bytes"
 	"context"
 	"encoding/csv"
 	"fmt"
@@ -27,9 +28,11 @@ func (m *MockFetcher) Fetch(_ context.Context, _ shared.AssetID, _ shared.TimeRa
 
 // StooqFetcher fetches daily OHLCV data from stooq.com.
 // BaseURL may be overridden for testing.
+// If APIKey is set it is appended as apikey query param (Stooq now requires an API key).
 type StooqFetcher struct {
 	BaseURL    string
 	HTTPClient *http.Client
+	APIKey     string
 }
 
 func (s *StooqFetcher) client() *http.Client {
@@ -54,11 +57,16 @@ func (s *StooqFetcher) Fetch(ctx context.Context, asset shared.AssetID, r shared
 		r.From.Format("20060102"),
 		r.To.Format("20060102"),
 	)
+	if s.APIKey != "" {
+		url += "&apikey=" + s.APIKey
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("stooq: build request: %w", err)
 	}
+
+	req.Header.Set("User-Agent", "phantom-quant/0.1")
 
 	resp, err := s.client().Do(req)
 	if err != nil {
@@ -66,7 +74,32 @@ func (s *StooqFetcher) Fetch(ctx context.Context, asset shared.AssetID, r shared
 	}
 	defer resp.Body.Close()
 
-	return parseStooqCSV(resp.Body, asset)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("stooq: read body: %w", err)
+	}
+
+	// Stooq returns "No data" (plain text) when ticker/date range empty.
+	// Return empty slice, not error — no data is valid.
+	trimmed := bytes.TrimSpace(body)
+	if len(trimmed) == 0 || bytes.Equal(trimmed, []byte("No data")) {
+		return nil, nil
+	}
+
+	// Detect HTML response (Stooq returns HTML when API key is missing)
+	if trimmed[0] == '<' {
+		if len(trimmed) > 200 {
+			trimmed = trimmed[:200]
+		}
+		return nil, &transientError{fmt.Errorf("stooq: non-CSV response (missing API key?): %s", string(trimmed))}
+	}
+
+	return parseStooqCSVBytes(trimmed, asset)
+}
+
+// parseStooqCSVBytes parses Stooq CSV from raw bytes.
+func parseStooqCSVBytes(data []byte, asset shared.AssetID) ([]shared.PricePoint, error) {
+	return parseStooqCSV(bytes.NewReader(data), asset)
 }
 
 // parseStooqCSV parses the Stooq CSV format:

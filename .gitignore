@@ -130,6 +130,9 @@ secrets/
 # Documentation
 # ============================================
 
+# Benchmark result history
+benchmarks/
+
 # Generated docs
 /target/doc/
 

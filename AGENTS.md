@@ -6,13 +6,19 @@
 - `make proto` — `buf generate` → `gen/*.pb.go` from `proto/compute.proto`.
 - `make build-rust` — release build of `compute_server` (requires `PROTOC` env var).
 - `make build-go` — `go build -o ingestion ./cmd/`.
-- `make test` — all Go (`go test ./...`) + Rust (`cargo test --manifest-path rust/compute_server/Cargo.toml`).
+- `make test` — all Go (`go test ./...`) + all Rust crates (`cargo test` on each).
 - `make run` — build and run Go HTTP server (`:8080`).
 - `make run-compute` — build and run Rust gRPC server.
+- `make benchmark` — build Rust + benchmark tool, run BTC halving CAR benchmark.
 
 Single test examples:
 - Go: `go test ./pkg/signalmatrix/... -run TestName`
 - Rust: `PROTOC=$HOME/protoc/bin/protoc cargo test --manifest-path rust/compute_server/Cargo.toml test_name`
+
+Benchmark tool flags:
+- `--skip-halving` — skip BTC halving benchmark
+- `--fixtures` — use synthetic data instead of live API
+- `--insecure` — skip TLS verify (needed if system clock skewed for date)
 
 ## Environment
 
@@ -27,7 +33,7 @@ Go entrypoint: `cmd/ingestion.go` (Gin HTTP server on `:8080` with `/health` and
 
 Go packages (`pkg/`):
 - `shared` — core types (`Event`, `PricePoint`, `PriceWindow`, `AssetID`, `EventType`).
-- `ingestion` — `Fetcher`, `Deduper`, `Store` interfaces + `Pipeline` wiring. Implemented (`StooqFetcher`, `MemDeduper`, `MemStore`).
+- `ingestion` — `Fetcher`, `Deduper`, `Store` interfaces + `Pipeline` wiring. Implemented (`StooqFetcher`, `BinanceFetcher`, `YahooFinanceFetcher`, `MemDeduper`, `MemStore`).
 - `signalmatrix` — `EventLookup`, `WindowBuilder` interfaces + `RustBridge` (gRPC client to `compute_server`).
 - `aggregation` — cross-sectional stats (`MeanCAR`, `BMPTest`, `KolariPynnonen`).
 
@@ -35,7 +41,7 @@ Rust crates (`rust/`):
 - `compute_server` (bin) — tonic gRPC server exposing `graphic_processor` and `backtesting` functions. Only crate built via Makefile.
 - `graphic_processor` (rlib) — `percent_changes`, `build_window` (uses `nalgebra`).
 - `backtesting` (rlib) — `abnormal_return`, `cumulative_abnormal_return`, `t_test_one_sample` (uses `ndarray`/`ndarray-stats`).
-- `shape_matching` (rlib) — `euclidean_distance`, `dtw_distance` (uses `ndarray`). **Currently unlinked** — not imported by `compute_server` or other crates.
+- `shape_matching` (rlib) — `euclidean_distance`, `dtw_distance` (uses `ndarray`).
 
 Data flow:
 ```

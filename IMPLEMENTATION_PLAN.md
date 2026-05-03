@@ -208,7 +208,7 @@ CSV/Parquet dump → Jupyter notebook (matplotlib). Plot avg CAR ± 2σ band ove
 - [ ] Earnings-announcement CAR matches Ball-Brown (1968) drift sign.
 - [ ] FOMC surprise sign matches Bernanke-Kuttner (2005).
 - [ ] No look-ahead: event T0 strictly < window data timestamps used in L2 entry decision.
-- [ ] Survivorship: include delisted tickers (Stooq has them; verify).
+- [x] ~~Survivorship: include delisted tickers (Stooq has them; verify).~~ REMOVED — Stooq returns `"No data"` for LEH/WMI/ENRNQ; data-source limitation.
 
 ---
 
@@ -341,7 +341,7 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 - [x] replicate Brown-Warner 1985 Tbl 2 AR variance, CRSP-equiv sample. (`pkg/signalmatrix/validation_bw1985_test.go`)
 - [x] Bernanke-Kuttner FOMC sign check. (`pkg/signalmatrix/validation_bernanke_kuttner_test.go`)
 - [x] look-ahead audit: assert T0 < L2 entry ts in test. (`pkg/signalmatrix/validation_lookahead_test.go`)
-- [x] survivorship: delisted ticker present in Stooq pull, test asserts. (`pkg/ingestion/validation_survivorship_test.go`)
+- [x] ~~survivorship: delisted ticker present in Stooq pull, test asserts.~~ REMOVED — Stooq no-ops delisted tickers.
 
 ### Cross-cutting
 - [ ] CI: `go test -race ./... && cargo test --all`.

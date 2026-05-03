@@ -32,6 +32,38 @@ func TestMockFetcherReturnsData(t *testing.T) {
 	}
 }
 
+func TestStooqFetcherNoDataReturnsEmpty(t *testing.T) {
+	t.Run("empty body", func(t *testing.T) {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte{})
+		}))
+		defer srv.Close()
+		f := &StooqFetcher{BaseURL: srv.URL}
+		pts, err := f.Fetch(context.Background(), "FAKE.US", shared.TimeRange{})
+		if err != nil {
+			t.Fatalf("expected nil error for empty body, got %v", err)
+		}
+		if len(pts) != 0 {
+			t.Fatalf("expected 0 points, got %d", len(pts))
+		}
+	})
+
+	t.Run("no data text", func(t *testing.T) {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, _ = w.Write([]byte("No data"))
+		}))
+		defer srv.Close()
+		f := &StooqFetcher{BaseURL: srv.URL}
+		pts, err := f.Fetch(context.Background(), "FAKE.US", shared.TimeRange{})
+		if err != nil {
+			t.Fatalf("expected nil error for 'No data', got %v", err)
+		}
+		if len(pts) != 0 {
+			t.Fatalf("expected 0 points, got %d", len(pts))
+		}
+	})
+}
+
 func TestMockFetcherReturnsError(t *testing.T) {
 	mf := &MockFetcher{Err: errors.New("network error")}
 	_, err := mf.Fetch(context.Background(), "AAPL", shared.TimeRange{})
