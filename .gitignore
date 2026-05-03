@@ -37,7 +37,6 @@ go.work.sum
 # gen/
 
 # Go build output
-ingestion
 
 # Editor/IDE
 # .idea/

@@ -8,22 +8,33 @@ End-to-end blueprint. Free data → ingestion → event study → backtest. Grou
 
 ### Core papers (event study methodology)
 - **Fama, Fisher, Jensen, Roll (1969)** — "The Adjustment of Stock Prices to New Information." Original event-study framework. Abnormal return decomposition.
+    - *Access Link*: [Semantic Scholar Entry](https://www.semanticscholar.org/paper/The-Adjustment-of-Stock-Prices-to-New-Information-Fama-Fisher/0cfd018f93e42c6be116e598002ec174e917e9f5?p2df) [citation:1]
 - **Brown & Warner (1980, 1985)** — "Measuring Security Price Performance" / "Using Daily Stock Returns." Defines AR, CAR, t-test under daily data. Benchmark for any AR estimator.
+    - *Access Link*: Available via [James Cook University ResearchOnline](https://researchonline.jcu.edu.au/86543/) (Author manuscript available for download) [citation:2]
 - **MacKinlay (1997)** — "Event Studies in Economics and Finance," *J. Econ. Lit.* Canonical reference. Estimation window L1 (~120-250 days), event window L2 (e.g. [-10, +10]), market model.
+    - *Access Link*: Search via [JSTOR](https://www.jstor.org/) (Access usually requires login via institutional/library credentials or free account for limited reading).
 - **Campbell, Lo, MacKinlay (1997)** — *The Econometrics of Financial Markets*, Ch. 4. Textbook treatment. Use as primary spec source.
+    - *Access Link*: [Stanford University Libraries Entry](https://searchworks.stanford.edu/view/13344004) [citation:3][citation:4]
 - **Boehmer, Musumeci, Poulsen (1991)** — Standardized cross-sectional test. Robust to event-induced variance.
+    - *Access Link*: [ScienceDirect Entry](https://doi.org/10.1016/0304-405X(91)90032-F) (DOI link) [citation:5]
 - **Kolari & Pynnönen (2010)** — Cross-sectional correlation adjustment. Use when events cluster in calendar time.
+    - *Access Link*: [EconPapers Entry](http://hdl.handle.net/10.1093/rfs/hhq072) (PDF available via DOI link) [citation:6]
 
 ### Pattern matching / DTW
 - **Sakoe & Chiba (1978)** — "Dynamic programming algorithm optimization for spoken word recognition." Original DTW. Sakoe-Chiba band constraint.
+    - *Access Link*: [Direct PDF via IRIT.fr](https://www.irit.fr/~Julien.Pinquier/Docs/TP_MABS/res/dtw-sakoe-chiba78.pdf) [citation:7]
 - **Berndt & Clifford (1994)** — "Using Dynamic Time Warping to Find Patterns in Time Series." DTW applied to financial series.
+    - *Access Link*: Usually available via [ACM Digital Library](https://dl.acm.org/) (Free access may require institutional login).
 - **Keogh & Ratanamahatana (2005)** — "Exact indexing of dynamic time warping." LB_Keogh lower bound. Mandatory for scale.
+    - *Access Link*: [Rdrr.io Documentation & Link](https://rdrr.io/cran/TSdist/man/LBKeoghDistance.html) (References the paper) [citation:8][citation:9]
 
 ### Backtesting hygiene
 - **López de Prado (2018)** — *Advances in Financial Machine Learning.* Ch. 7 (purged k-fold CV), Ch. 11-13 (backtest overfit, deflated Sharpe). Avoid look-ahead, leakage.
+    - *Access Link*: [National Economics University Library Entry](https://opaclib.neu.edu.vn/search~S7?/aLoney%2C+Kevin/aloney+kevin/1%2C1%2C0%2CB/frameset&FF=alopez+de+prado+marcos&0%2C0%2C) [citation:10]
 - **Bailey & López de Prado (2014)** — Deflated Sharpe Ratio. Adjust for multiple testing.
+    - *Access Link*: Preprint usually available on [arXiv.org](https://arxiv.org/) or [SSRN](https://www.ssrn.com/).
 - **Harvey, Liu, Zhu (2016)** — "…and the Cross-Section of Expected Returns." t > 3.0 threshold given p-hacking.
-
+    - *Access Link*: [Semantic Scholar Entry](https://www.semanticscholar.org/) (Search title for available PDFs).
 ---
 
 ## 2. Free Data Sources
@@ -313,18 +324,18 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 ### Slice 5 — DTW shape matching
 
 #### Rust `shape_matching`
-- [ ] test: `euclidean_distance` z-norm pre-step golden.
-- [ ] test: `dtw_distance` Sakoe-Chiba band vs `dtw` py ref golden.
-- [ ] test: `lb_keogh` ≤ true DTW (property test, 1000 random pairs).
-- [ ] test: prune workflow — LB_Keogh reject → DTW skip count correct.
+- [x] test: `euclidean_distance` z-norm pre-step golden.
+- [x] test: `dtw_distance` Sakoe-Chiba band vs `dtw` py ref golden.
+- [x] test: `lb_keogh` ≤ true DTW (property test, 1000 random pairs).
+- [x] test: prune workflow — LB_Keogh reject → DTW skip count correct.
 
 ### Slice 6 — Backtest harness
-- [ ] test: purged k-fold split, embargo=L2 len, no train/test overlap.
-- [ ] test: Sharpe vs `numpy` golden.
-- [ ] test: max drawdown known series.
-- [ ] test: deflated Sharpe (Bailey-LdP) vs paper example.
-- [ ] test: 5bps slippage applied each fill.
-- [ ] e2e: full pipeline Stooq→event→AR→CAR→strategy sim → report.
+- [x] test: purged k-fold split, embargo=L2 len, no train/test overlap.
+- [x] test: Sharpe vs `numpy` golden.
+- [x] test: max drawdown known series.
+- [x] test: deflated Sharpe (Bailey-LdP) vs paper example.
+- [x] test: 5bps slippage applied each fill.
+- [x] e2e: full pipeline Stooq→event→AR→CAR→strategy sim → report.
 
 ### Validation gates (per §6)
 - [ ] replicate Brown-Warner 1985 Tbl 2 AR variance, CRSP-equiv sample.
