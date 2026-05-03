@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package compute;
+
+option go_package = "phantom/gen/computepb";
+
+service ComputeService {
+  rpc PercentChanges(PercentChangesRequest) returns (PercentChangesResponse);
+  rpc BuildWindow(BuildWindowRequest) returns (BuildWindowResponse);
+  rpc AbnormalReturn(AbnormalReturnRequest) returns (AbnormalReturnResponse);
+  rpc CumulativeAbnormalReturn(CARRequest) returns (CARResponse);
+  rpc TTestOneSample(TTestRequest) returns (TTestResponse);
+}
+
+message PercentChangesRequest {
+  repeated double prices = 1;
+}
+message PercentChangesResponse {
+  repeated double changes = 1;
+}
+
+message BuildWindowRequest {
+  repeated double all_prices = 1;
+  uint32 t0_index = 2;
+  uint32 est_days = 3;
+  uint32 event_hours = 4;
+}
+message BuildWindowResponse {
+  repeated double window = 1;
+}
+
+message AbnormalReturnRequest {
+  repeated double actual_returns = 1;
+  repeated double market_returns = 2;
+  double alpha = 3;
+  double beta = 4;
+}
+message AbnormalReturnResponse {
+  repeated double ar = 1;
+}
+
+message CARRequest {
+  repeated double ar = 1;
+}
+message CARResponse {
+  double car = 1;
+}
+
+message TTestRequest {
+  repeated double samples = 1;
+}
+message TTestResponse {
+  double t_statistic = 1;
+}
