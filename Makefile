@@ -8,6 +8,9 @@ proto:
 build-rust:
 	PROTOC=$(PROTOC) cargo build --release --manifest-path rust/compute_server/Cargo.toml
 
+build-rust-debug:
+	PROTOC=$(PROTOC) cargo build --manifest-path rust/compute_server/Cargo.toml
+
 build-go:
 	go build -o ingestion ./cmd/
 
