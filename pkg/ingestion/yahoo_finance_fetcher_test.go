@@ -10,15 +10,32 @@ import (
 	"phantom/pkg/shared"
 )
 
-const yahooFixtureCSV = `Date,Open,High,Low,Close,Adj Close,Volume
-2024-01-02,150.12,152.00,149.50,151.00,150.80,1234567
-2024-01-03,151.00,155.50,150.00,154.25,154.00,2345678
-`
+const yahooFixtureJSON = `{
+  "chart": {
+    "result": [
+      {
+        "timestamp": [1704153600, 1704240000],
+        "indicators": {
+          "quote": [
+            {
+              "open": [150.12, 151.00],
+              "high": [152.00, 155.50],
+              "low": [149.50, 150.00],
+              "close": [151.00, 154.25],
+              "volume": [1234567, 2345678]
+            }
+          ]
+        }
+      }
+    ],
+    "error": null
+  }
+}`
 
-func TestYahooFetcherParsesCSV(t *testing.T) {
+func TestYahooFetcherParsesJSON(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/csv")
-		_, _ = w.Write([]byte(yahooFixtureCSV))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(yahooFixtureJSON))
 	}))
 	defer srv.Close()
 
@@ -46,36 +63,38 @@ func TestYahooFetcherParsesCSV(t *testing.T) {
 	if p0.Source != "yahoo" {
 		t.Errorf("Source: got %q want \"yahoo\"", p0.Source)
 	}
+	if !p0.Timestamp.Equal(time.Unix(1704153600, 0).UTC()) {
+		t.Errorf("Timestamp: got %v", p0.Timestamp)
+	}
 }
 
-func TestYahooFetcherEmptyOnHTML(t *testing.T) {
+func TestYahooFetcherEmptyOnNoResult(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html")
-		_, _ = w.Write([]byte("<html>unknown ticker</html>"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"chart":{"result":[],"error":null}}`))
 	}))
 	defer srv.Close()
 
 	f := &YahooFinanceFetcher{BaseURL: srv.URL}
 	pts, err := f.Fetch(context.Background(), "FAKE", shared.TimeRange{})
 	if err != nil {
-		t.Fatalf("expected nil error for HTML, got %v", err)
+		t.Fatalf("expected nil error, got %v", err)
 	}
 	if len(pts) != 0 {
 		t.Fatalf("expected 0 points, got %d", len(pts))
 	}
 }
 
-func TestYahooFetcherEmptyOnJSON(t *testing.T) {
+func TestYahooFetcherEmptyOnHTTPError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"error":"Not Found"}`))
+		w.WriteHeader(http.StatusNotFound)
 	}))
 	defer srv.Close()
 
 	f := &YahooFinanceFetcher{BaseURL: srv.URL}
 	pts, err := f.Fetch(context.Background(), "FAKE", shared.TimeRange{})
 	if err != nil {
-		t.Fatalf("expected nil error for JSON, got %v", err)
+		t.Fatalf("expected nil error for HTTP 404, got %v", err)
 	}
 	if len(pts) != 0 {
 		t.Fatalf("expected 0 points, got %d", len(pts))

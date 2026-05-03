@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"phantom/pkg/aggregation"
@@ -119,6 +120,9 @@ func main() {
 	insecure := flag.Bool("insecure", false, "skip TLS verification (needed if system clock is skewed)")
 	useFixtures := flag.Bool("fixtures", false, "use synthetic fixture data instead of live APIs")
 	outputDir := flag.String("output-dir", "benchmarks", "directory to save JSON result history")
+	geopolitics := flag.Bool("geopolitics", false, "run geopolitics event-study benchmark (wikipedia events)")
+	eventType := flag.String("event-type", "war", "geopolitics event type: war, election, sanction")
+	assets := flag.String("assets", "SPY,GLD,USO", "comma-separated assets for geopolitics benchmark")
 	flag.Parse()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
@@ -171,7 +175,10 @@ func main() {
 
 	var report BenchmarkReport
 
-	if *useFixtures {
+	if *geopolitics {
+		assetList := parseAssets(*assets)
+		report = runGeopoliticsBenchmark(ctx, bridge, cfg, mode, shared.EventType(*eventType), assetList, *insecure)
+	} else if *useFixtures {
 		if !*skipHalving {
 			report = runHalvingFixtureBenchmark(ctx, bridge, cfg, mode)
 		}
@@ -834,6 +841,257 @@ func runHalvingFixtureBenchmark(ctx context.Context, bridge *signalmatrix.RustBr
 			i, hdrift, alpha, beta, sigmaEps, rSquared, car)
 
 		events = append(events, result)
+	}
+
+	return buildReport(name, cfg, mode, events)
+}
+
+// --- helpers -----------------------------------------------------------------
+
+func parseAssets(s string) []shared.AssetID {
+	parts := strings.Split(s, ",")
+	out := make([]shared.AssetID, len(parts))
+	for i, p := range parts {
+		out[i] = shared.AssetID(strings.TrimSpace(p))
+	}
+	return out
+}
+
+// --- geopolitics CAR benchmark (Wikipedia + Yahoo Finance) --------------------
+
+func runGeopoliticsBenchmark(ctx context.Context, bridge *signalmatrix.RustBridge, cfg ConfigInfo, mode string, eventType shared.EventType, assets []shared.AssetID, insecureTLS bool) BenchmarkReport {
+	name := fmt.Sprintf("Geopolitics %s CAR", eventType)
+
+	httpClient := http.DefaultClient
+	if insecureTLS {
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		}
+	}
+
+	lookup := signalmatrix.NewWikiEventLookup()
+	wikiEvents, err := lookup.LoadHistorical(ctx, eventType)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "  wiki lookup failed: %v\n", err)
+		return buildReport(name, cfg, mode, nil)
+	}
+	fmt.Fprintf(os.Stderr, "  wiki events: %d\n", len(wikiEvents))
+
+	if len(wikiEvents) == 0 {
+		return buildReport(name, cfg, mode, nil)
+	}
+
+	var events []EventResult
+
+	for _, we := range wikiEvents {
+		for _, asset := range assets {
+			evt := we
+			evt.Asset = asset
+
+			result := EventResult{
+				ID: fmt.Sprintf("%s-%s", we.ID, asset),
+				Event: EventInfo{
+					ID: evt.ID, Type: string(evt.Type),
+					Timestamp: evt.Timestamp.Format(time.RFC3339),
+					Asset:     string(evt.Asset),
+				},
+			}
+
+			from := evt.Timestamp.AddDate(0, 0, -cfg.EstimationWindowDays-30)
+			to := evt.Timestamp.AddDate(0, 0, cfg.PostEventDays+10)
+
+			result.Data.FetchRange = DateInfo{
+				From: from.Format(time.RFC3339),
+				To:   to.Format(time.RFC3339),
+			}
+
+			fetcher := &ingestion.YahooFinanceFetcher{HTTPClient: httpClient}
+			store := ingestion.NewMemStore()
+			pipe := &ingestion.Pipeline{Fetcher: fetcher, Deduper: &ingestion.MemDeduper{}, Store: store}
+
+			spyAsset := shared.AssetID("SPY")
+			if err := pipe.Run(ctx, spyAsset, shared.TimeRange{From: from, To: to}); err != nil {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("SPY fetch failed: %v", err)
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/SPY: fetch failed: %v\n", evt.ID, err)
+				continue
+			}
+			if err := pipe.Run(ctx, asset, shared.TimeRange{From: from, To: to}); err != nil {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("%s fetch failed: %v", asset, err)
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/%s: fetch failed: %v\n", evt.ID, asset, err)
+				continue
+			}
+
+			prices, err := store.Get(ctx, asset, shared.TimeRange{From: from, To: to})
+			if err != nil || len(prices) < cfg.EstimationMinObs {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("insufficient %s data (%d pts)", asset, len(prices))
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/%s: insufficient data (%d pts)\n", evt.ID, asset, len(prices))
+				continue
+			}
+
+			spyPrices, err := store.Get(ctx, spyAsset, shared.TimeRange{From: from, To: to})
+			if err != nil || len(spyPrices) < cfg.EstimationMinObs {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("insufficient SPY data (%d pts)", len(spyPrices))
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/SPY: insufficient data (%d pts)\n", evt.ID, len(spyPrices))
+				continue
+			}
+
+			result.Data.PriceCount = len(prices)
+			result.Data.DateRange = DateInfo{
+				From: prices[0].Timestamp.Format(time.RFC3339),
+				To:   prices[len(prices)-1].Timestamp.Format(time.RFC3339),
+			}
+
+			t0Idx := -1
+			for i, p := range prices {
+				if p.AssetID == asset && p.Timestamp.Equal(evt.Timestamp) {
+					t0Idx = i
+					break
+				}
+			}
+			if t0Idx < 0 {
+				for i, p := range prices {
+					if p.AssetID == asset && !p.Timestamp.After(evt.Timestamp) {
+						if t0Idx < 0 || p.Timestamp.After(prices[t0Idx].Timestamp) {
+							t0Idx = i
+						}
+					}
+				}
+			}
+
+			if t0Idx < 0 {
+				result.Status = "skipped"
+				result.Error = "T0 not found in price series"
+				events = append(events, result)
+				continue
+			}
+
+			spyT0Idx := -1
+			for i, p := range spyPrices {
+				if !p.Timestamp.After(prices[t0Idx].Timestamp) {
+					spyT0Idx = i
+				}
+			}
+			if spyT0Idx < 0 {
+				result.Status = "skipped"
+				result.Error = "SPY T0 not found"
+				events = append(events, result)
+				continue
+			}
+
+			fmt.Fprintf(os.Stderr, "  %s/%s: %d price pts, T0 at index %d\n", evt.ID, asset, len(prices), t0Idx)
+
+			l1Start := t0Idx - cfg.EstimationWindowDays
+			l1End := t0Idx - 11
+			if l1Start >= 0 && l1End > l1Start && l1End < len(prices) {
+				l1 := prices[l1Start : l1End+1]
+				result.L1Window = &WindowInfo{
+					NStart: l1Start, NEnd: l1End, NObs: len(l1),
+					Start: l1[0].Timestamp.Format(time.RFC3339),
+					End:   l1[len(l1)-1].Timestamp.Format(time.RFC3339),
+				}
+			}
+
+			l2Start := t0Idx
+			l2End := t0Idx + cfg.PostEventDays
+			if l2End >= len(prices) {
+				l2End = len(prices) - 1
+			}
+			l2 := prices[l2Start : l2End+1]
+			result.L2Window = &WindowInfo{
+				NStart: l2Start, NEnd: l2End, NObs: len(l2),
+				Start: l2[0].Timestamp.Format(time.RFC3339),
+				End:   l2[len(l2)-1].Timestamp.Format(time.RFC3339),
+			}
+
+			spyL1Start := spyT0Idx - cfg.EstimationWindowDays
+			spyL1End := spyT0Idx - 11
+			spyL2Start := spyT0Idx
+			spyL2End := spyT0Idx + cfg.PostEventDays
+			if spyL2End >= len(spyPrices) {
+				spyL2End = len(spyPrices) - 1
+			}
+
+			if spyL1Start < 0 || spyL1End <= spyL1Start || spyL1End >= len(spyPrices) {
+				result.Status = "skipped"
+				result.Error = "insufficient SPY estimation window"
+				events = append(events, result)
+				continue
+			}
+
+			spyL1 := spyPrices[spyL1Start : spyL1End+1]
+			stkL1 := prices[l1Start : l1End+1]
+			spyL1Returns := logReturns(spyL1)
+			stkL1Returns := logReturns(stkL1)
+
+			alpha, beta, sigmaEps, err := bridge.OLSMarketModel(ctx, stkL1Returns, spyL1Returns)
+			if err != nil {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("OLS failed: %v", err)
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/%s: OLS failed: %v\n", evt.ID, asset, err)
+				continue
+			}
+
+			nObs := len(stkL1Returns)
+			meanRi := 0.0
+			for _, v := range stkL1Returns {
+				meanRi += v
+			}
+			meanRi /= float64(nObs)
+			sst := 0.0
+			for _, v := range stkL1Returns {
+				d := v - meanRi
+				sst += d * d
+			}
+			ssr := sigmaEps * sigmaEps * float64(nObs-2)
+			rSquared := 1.0 - ssr/sst
+
+			result.MarketModel = &MarketModel{
+				Alpha: alpha, Beta: beta, SigmaEps: sigmaEps,
+				RSquared: rSquared, NObs: nObs,
+			}
+
+			spyL2 := spyPrices[spyL2Start : spyL2End+1]
+			stkL2 := prices[l2Start : l2End+1]
+			spyL2Returns := logReturns(spyL2)
+			stkL2Returns := logReturns(stkL2)
+
+			ar, err := bridge.AbnormalReturn(ctx, stkL2Returns, spyL2Returns, alpha, beta)
+			if err != nil {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("AR failed: %v", err)
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/%s: AR failed: %v\n", evt.ID, asset, err)
+				continue
+			}
+			result.AR = ar
+
+			car, err := bridge.CumulativeAbnormalReturn(ctx, ar)
+			if err != nil {
+				result.Status = "skipped"
+				result.Error = fmt.Sprintf("CAR failed: %v", err)
+				events = append(events, result)
+				fmt.Fprintf(os.Stderr, "  %s/%s: CAR failed: %v\n", evt.ID, asset, err)
+				continue
+			}
+			result.CAR = car
+			result.Status = "success"
+
+			fmt.Fprintf(os.Stderr, "  %s/%s: α=%.6f β=%.4f σ=%.4f R²=%.4f CAR(0,+%d)=%.6f\n",
+				evt.ID, asset, alpha, beta, sigmaEps, rSquared, cfg.PostEventDays, car)
+
+			events = append(events, result)
+		}
 	}
 
 	return buildReport(name, cfg, mode, events)

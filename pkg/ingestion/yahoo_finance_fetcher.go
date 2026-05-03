@@ -1,25 +1,23 @@
 package ingestion
 
 import (
-	"bytes"
 	"context"
-	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"phantom/pkg/shared"
 )
 
 const (
-	yahooDefaultBaseURL = "https://query1.finance.yahoo.com"
-	yahooDownloadPath   = "/v7/finance/download"
+	yahooDefaultBaseURL = "https://query2.finance.yahoo.com"
+	yahooChartPath      = "/v8/finance/chart"
 	yahooSource         = "yahoo"
 )
 
-// YahooFinanceFetcher fetches daily OHLCV data from Yahoo Finance v7 API.
+// YahooFinanceFetcher fetches daily OHLCV data from Yahoo Finance v8 chart API.
 // Free, no API key required. Rate-limit ~1 req/s advised.
 type YahooFinanceFetcher struct {
 	BaseURL    string
@@ -40,11 +38,29 @@ func (f *YahooFinanceFetcher) baseURL() string {
 	return yahooDefaultBaseURL
 }
 
-// Fetch downloads daily bars from Yahoo Finance for asset over time range.
-// CSV columns: Date,Open,High,Low,Close,Adj Close,Volume.
+// chartResponse models Yahoo Finance v8 chart JSON response.
+type chartResponse struct {
+	Chart struct {
+		Result []struct {
+			Timestamp  []int64 `json:"timestamp"`
+			Indicators struct {
+				Quote []struct {
+					Open   []float64 `json:"open"`
+					High   []float64 `json:"high"`
+					Low    []float64 `json:"low"`
+					Close  []float64 `json:"close"`
+					Volume []int64   `json:"volume"`
+				} `json:"quote"`
+			} `json:"indicators"`
+		} `json:"result"`
+		Error interface{} `json:"error"`
+	} `json:"chart"`
+}
+
+// Fetch downloads daily bars from Yahoo Finance v8 chart API.
 func (f *YahooFinanceFetcher) Fetch(ctx context.Context, asset shared.AssetID, r shared.TimeRange) ([]shared.PricePoint, error) {
-	url := fmt.Sprintf("%s%s/%s?period1=%d&period2=%d&interval=1d&events=history&includeAdjustedClose=true",
-		f.baseURL(), yahooDownloadPath, string(asset),
+	url := fmt.Sprintf("%s%s/%s?period1=%d&period2=%d&interval=1d",
+		f.baseURL(), yahooChartPath, string(asset),
 		r.From.Unix(), r.To.Unix())
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -65,54 +81,57 @@ func (f *YahooFinanceFetcher) Fetch(ctx context.Context, asset shared.AssetID, r
 		return nil, fmt.Errorf("yahoo: read body: %w", err)
 	}
 
-	// Yahoo returns HTML/JSON error page for unknown tickers — treat as empty.
-	trimmed := bytes.TrimSpace(body)
-	if len(trimmed) == 0 || trimmed[0] == '<' || trimmed[0] == '{' {
+	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusBadRequest {
+		return nil, nil
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("yahoo: HTTP %d", resp.StatusCode)
+	}
+
+	var cr chartResponse
+	if err := json.Unmarshal(body, &cr); err != nil {
+		return nil, fmt.Errorf("yahoo: json: %w", err)
+	}
+
+	if len(cr.Chart.Result) == 0 {
 		return nil, nil
 	}
 
-	return parseYahooCSV(body, asset)
-}
-
-// parseYahooCSV parses Yahoo Finance CSV format:
-// Date,Open,High,Low,Close,Adj Close,Volume
-func parseYahooCSV(data []byte, asset shared.AssetID) ([]shared.PricePoint, error) {
-	cr := csv.NewReader(bytes.NewReader(data))
-	cr.TrimLeadingSpace = true
-
-	header, err := cr.Read()
-	if err != nil {
-		return nil, fmt.Errorf("%w: yahoo header: %v", ErrMalformedCSV, err)
+	res := cr.Chart.Result[0]
+	if len(res.Timestamp) == 0 || len(res.Indicators.Quote) == 0 {
+		return nil, nil
 	}
-	if len(header) < 7 {
-		return nil, fmt.Errorf("%w: yahoo expected 7 columns, got %d", ErrMalformedCSV, len(header))
+
+	quote := res.Indicators.Quote[0]
+	n := len(res.Timestamp)
+	if n > len(quote.Open) {
+		n = len(quote.Open)
 	}
 
 	var points []shared.PricePoint
-	for {
-		rec, err := cr.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, fmt.Errorf("%w: yahoo row: %v", ErrMalformedCSV, err)
-		}
-		if len(rec) < 7 {
-			return nil, fmt.Errorf("%w: yahoo row has %d columns, want 7", ErrMalformedCSV, len(rec))
-		}
+	for i := 0; i < n; i++ {
+		ts := time.Unix(res.Timestamp[i], 0).UTC()
 
-		ts, err := time.Parse("2006-01-02", rec[0])
-		if err != nil {
-			return nil, fmt.Errorf("%w: yahoo date %q: %v", ErrMalformedCSV, rec[0], err)
+		open := 0.0
+		if i < len(quote.Open) {
+			open = quote.Open[i]
 		}
-
-		open, _ := strconv.ParseFloat(rec[1], 64)
-		high, _ := strconv.ParseFloat(rec[2], 64)
-		low, _ := strconv.ParseFloat(rec[3], 64)
-		close_, _ := strconv.ParseFloat(rec[4], 64)
-		vol, _ := strconv.ParseFloat(rec[6], 64)
-
-		// rec[5] is Adj Close, skip — use Close for consistency.
+		high := 0.0
+		if i < len(quote.High) {
+			high = quote.High[i]
+		}
+		low := 0.0
+		if i < len(quote.Low) {
+			low = quote.Low[i]
+		}
+		close_ := 0.0
+		if i < len(quote.Close) {
+			close_ = quote.Close[i]
+		}
+		vol := 0.0
+		if i < len(quote.Volume) {
+			vol = float64(quote.Volume[i])
+		}
 
 		points = append(points, shared.PricePoint{
 			AssetID:   asset,
@@ -127,3 +146,5 @@ func parseYahooCSV(data []byte, asset shared.AssetID) ([]shared.PricePoint, erro
 	}
 	return points, nil
 }
+
+
