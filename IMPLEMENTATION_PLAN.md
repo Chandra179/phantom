@@ -299,10 +299,10 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 - [x] integration: real Rust server + Go client; AR = Rust unit test output.
 
 ### Slice 3 — CAR aggregation + t-test
-- [ ] test: cross-sectional mean CAR over N synth events.
-- [ ] test: BMP differs from naive t on clustered events.
-- [ ] test: Kolari-Pynnönen adj when calendar overlap > threshold.
-- [ ] e2e: EDGAR earnings 8-K → CAR sign matches Ball-Brown drift.
+- [x] test: cross-sectional mean CAR over N synth events.
+- [x] test: BMP differs from naive t on clustered events.
+- [x] test: Kolari-Pynnönen adj when calendar overlap > threshold.
+- [x] e2e: EDGAR earnings 8-K → CAR sign matches Ball-Brown drift.
 
 ### Slice 4 — Binance crypto
 - [ ] test: `BinanceFetcher` paginate 1000 bars (recorded fixture) → impl.

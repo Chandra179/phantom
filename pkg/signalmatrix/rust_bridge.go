@@ -43,6 +43,14 @@ func (rb *RustBridge) BuildWindow(ctx context.Context, allPrices []float64, t0In
 	return res.Window, nil
 }
 
+func (rb *RustBridge) OLSMarketModel(ctx context.Context, ri, rm []float64) (alpha, beta, sigmaEps float64, err error) {
+	res, err := rb.client.OLSMarketModel(ctx, &pb.OLSMarketModelRequest{RI: ri, RM: rm})
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	return res.Alpha, res.Beta, res.SigmaEps, nil
+}
+
 func (rb *RustBridge) AbnormalReturn(ctx context.Context, actual, market []float64, alpha, beta float64) ([]float64, error) {
 	res, err := rb.client.AbnormalReturn(ctx, &pb.AbnormalReturnRequest{
 		ActualReturns: actual,

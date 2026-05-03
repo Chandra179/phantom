@@ -7,6 +7,7 @@ option go_package = "phantom/gen/computepb";
 service ComputeService {
   rpc PercentChanges(PercentChangesRequest) returns (PercentChangesResponse);
   rpc BuildWindow(BuildWindowRequest) returns (BuildWindowResponse);
+  rpc OLSMarketModel(OLSMarketModelRequest) returns (OLSMarketModelResponse);
   rpc AbnormalReturn(AbnormalReturnRequest) returns (AbnormalReturnResponse);
   rpc CumulativeAbnormalReturn(CARRequest) returns (CARResponse);
   rpc TTestOneSample(TTestRequest) returns (TTestResponse);
@@ -27,6 +28,16 @@ message BuildWindowRequest {
 }
 message BuildWindowResponse {
   repeated double window = 1;
+}
+
+message OLSMarketModelRequest {
+  repeated double r_i = 1;
+  repeated double r_m = 2;
+}
+message OLSMarketModelResponse {
+  double alpha = 1;
+  double beta = 2;
+  double sigma_eps = 3;
 }
 
 message AbnormalReturnRequest {

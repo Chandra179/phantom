@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	ComputeService_PercentChanges_FullMethodName           = "/compute.ComputeService/PercentChanges"
 	ComputeService_BuildWindow_FullMethodName              = "/compute.ComputeService/BuildWindow"
+	ComputeService_OLSMarketModel_FullMethodName           = "/compute.ComputeService/OLSMarketModel"
 	ComputeService_AbnormalReturn_FullMethodName           = "/compute.ComputeService/AbnormalReturn"
 	ComputeService_CumulativeAbnormalReturn_FullMethodName = "/compute.ComputeService/CumulativeAbnormalReturn"
 	ComputeService_TTestOneSample_FullMethodName           = "/compute.ComputeService/TTestOneSample"
@@ -32,6 +33,7 @@ const (
 type ComputeServiceClient interface {
 	PercentChanges(ctx context.Context, in *PercentChangesRequest, opts ...grpc.CallOption) (*PercentChangesResponse, error)
 	BuildWindow(ctx context.Context, in *BuildWindowRequest, opts ...grpc.CallOption) (*BuildWindowResponse, error)
+	OLSMarketModel(ctx context.Context, in *OLSMarketModelRequest, opts ...grpc.CallOption) (*OLSMarketModelResponse, error)
 	AbnormalReturn(ctx context.Context, in *AbnormalReturnRequest, opts ...grpc.CallOption) (*AbnormalReturnResponse, error)
 	CumulativeAbnormalReturn(ctx context.Context, in *CARRequest, opts ...grpc.CallOption) (*CARResponse, error)
 	TTestOneSample(ctx context.Context, in *TTestRequest, opts ...grpc.CallOption) (*TTestResponse, error)
@@ -59,6 +61,16 @@ func (c *computeServiceClient) BuildWindow(ctx context.Context, in *BuildWindowR
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BuildWindowResponse)
 	err := c.cc.Invoke(ctx, ComputeService_BuildWindow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *computeServiceClient) OLSMarketModel(ctx context.Context, in *OLSMarketModelRequest, opts ...grpc.CallOption) (*OLSMarketModelResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OLSMarketModelResponse)
+	err := c.cc.Invoke(ctx, ComputeService_OLSMarketModel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +113,7 @@ func (c *computeServiceClient) TTestOneSample(ctx context.Context, in *TTestRequ
 type ComputeServiceServer interface {
 	PercentChanges(context.Context, *PercentChangesRequest) (*PercentChangesResponse, error)
 	BuildWindow(context.Context, *BuildWindowRequest) (*BuildWindowResponse, error)
+	OLSMarketModel(context.Context, *OLSMarketModelRequest) (*OLSMarketModelResponse, error)
 	AbnormalReturn(context.Context, *AbnormalReturnRequest) (*AbnormalReturnResponse, error)
 	CumulativeAbnormalReturn(context.Context, *CARRequest) (*CARResponse, error)
 	TTestOneSample(context.Context, *TTestRequest) (*TTestResponse, error)
@@ -119,6 +132,9 @@ func (UnimplementedComputeServiceServer) PercentChanges(context.Context, *Percen
 }
 func (UnimplementedComputeServiceServer) BuildWindow(context.Context, *BuildWindowRequest) (*BuildWindowResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BuildWindow not implemented")
+}
+func (UnimplementedComputeServiceServer) OLSMarketModel(context.Context, *OLSMarketModelRequest) (*OLSMarketModelResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method OLSMarketModel not implemented")
 }
 func (UnimplementedComputeServiceServer) AbnormalReturn(context.Context, *AbnormalReturnRequest) (*AbnormalReturnResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AbnormalReturn not implemented")
@@ -182,6 +198,24 @@ func _ComputeService_BuildWindow_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ComputeServiceServer).BuildWindow(ctx, req.(*BuildWindowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ComputeService_OLSMarketModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OLSMarketModelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ComputeServiceServer).OLSMarketModel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ComputeService_OLSMarketModel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ComputeServiceServer).OLSMarketModel(ctx, req.(*OLSMarketModelRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -254,6 +288,10 @@ var ComputeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BuildWindow",
 			Handler:    _ComputeService_BuildWindow_Handler,
+		},
+		{
+			MethodName: "OLSMarketModel",
+			Handler:    _ComputeService_OLSMarketModel_Handler,
 		},
 		{
 			MethodName: "AbnormalReturn",

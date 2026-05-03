@@ -221,6 +221,118 @@ func (x *BuildWindowResponse) GetWindow() []float64 {
 	return nil
 }
 
+type OLSMarketModelRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RI            []float64              `protobuf:"fixed64,1,rep,packed,name=r_i,json=rI,proto3" json:"r_i,omitempty"`
+	RM            []float64              `protobuf:"fixed64,2,rep,packed,name=r_m,json=rM,proto3" json:"r_m,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OLSMarketModelRequest) Reset() {
+	*x = OLSMarketModelRequest{}
+	mi := &file_compute_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OLSMarketModelRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OLSMarketModelRequest) ProtoMessage() {}
+
+func (x *OLSMarketModelRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_compute_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OLSMarketModelRequest.ProtoReflect.Descriptor instead.
+func (*OLSMarketModelRequest) Descriptor() ([]byte, []int) {
+	return file_compute_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *OLSMarketModelRequest) GetRI() []float64 {
+	if x != nil {
+		return x.RI
+	}
+	return nil
+}
+
+func (x *OLSMarketModelRequest) GetRM() []float64 {
+	if x != nil {
+		return x.RM
+	}
+	return nil
+}
+
+type OLSMarketModelResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Alpha         float64                `protobuf:"fixed64,1,opt,name=alpha,proto3" json:"alpha,omitempty"`
+	Beta          float64                `protobuf:"fixed64,2,opt,name=beta,proto3" json:"beta,omitempty"`
+	SigmaEps      float64                `protobuf:"fixed64,3,opt,name=sigma_eps,json=sigmaEps,proto3" json:"sigma_eps,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OLSMarketModelResponse) Reset() {
+	*x = OLSMarketModelResponse{}
+	mi := &file_compute_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OLSMarketModelResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OLSMarketModelResponse) ProtoMessage() {}
+
+func (x *OLSMarketModelResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_compute_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OLSMarketModelResponse.ProtoReflect.Descriptor instead.
+func (*OLSMarketModelResponse) Descriptor() ([]byte, []int) {
+	return file_compute_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *OLSMarketModelResponse) GetAlpha() float64 {
+	if x != nil {
+		return x.Alpha
+	}
+	return 0
+}
+
+func (x *OLSMarketModelResponse) GetBeta() float64 {
+	if x != nil {
+		return x.Beta
+	}
+	return 0
+}
+
+func (x *OLSMarketModelResponse) GetSigmaEps() float64 {
+	if x != nil {
+		return x.SigmaEps
+	}
+	return 0
+}
+
 type AbnormalReturnRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ActualReturns []float64              `protobuf:"fixed64,1,rep,packed,name=actual_returns,json=actualReturns,proto3" json:"actual_returns,omitempty"`
@@ -233,7 +345,7 @@ type AbnormalReturnRequest struct {
 
 func (x *AbnormalReturnRequest) Reset() {
 	*x = AbnormalReturnRequest{}
-	mi := &file_compute_proto_msgTypes[4]
+	mi := &file_compute_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -245,7 +357,7 @@ func (x *AbnormalReturnRequest) String() string {
 func (*AbnormalReturnRequest) ProtoMessage() {}
 
 func (x *AbnormalReturnRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_compute_proto_msgTypes[4]
+	mi := &file_compute_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -258,7 +370,7 @@ func (x *AbnormalReturnRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AbnormalReturnRequest.ProtoReflect.Descriptor instead.
 func (*AbnormalReturnRequest) Descriptor() ([]byte, []int) {
-	return file_compute_proto_rawDescGZIP(), []int{4}
+	return file_compute_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *AbnormalReturnRequest) GetActualReturns() []float64 {
@@ -298,7 +410,7 @@ type AbnormalReturnResponse struct {
 
 func (x *AbnormalReturnResponse) Reset() {
 	*x = AbnormalReturnResponse{}
-	mi := &file_compute_proto_msgTypes[5]
+	mi := &file_compute_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -310,7 +422,7 @@ func (x *AbnormalReturnResponse) String() string {
 func (*AbnormalReturnResponse) ProtoMessage() {}
 
 func (x *AbnormalReturnResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_compute_proto_msgTypes[5]
+	mi := &file_compute_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +435,7 @@ func (x *AbnormalReturnResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AbnormalReturnResponse.ProtoReflect.Descriptor instead.
 func (*AbnormalReturnResponse) Descriptor() ([]byte, []int) {
-	return file_compute_proto_rawDescGZIP(), []int{5}
+	return file_compute_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AbnormalReturnResponse) GetAr() []float64 {
@@ -342,7 +454,7 @@ type CARRequest struct {
 
 func (x *CARRequest) Reset() {
 	*x = CARRequest{}
-	mi := &file_compute_proto_msgTypes[6]
+	mi := &file_compute_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +466,7 @@ func (x *CARRequest) String() string {
 func (*CARRequest) ProtoMessage() {}
 
 func (x *CARRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_compute_proto_msgTypes[6]
+	mi := &file_compute_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +479,7 @@ func (x *CARRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CARRequest.ProtoReflect.Descriptor instead.
 func (*CARRequest) Descriptor() ([]byte, []int) {
-	return file_compute_proto_rawDescGZIP(), []int{6}
+	return file_compute_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CARRequest) GetAr() []float64 {
@@ -386,7 +498,7 @@ type CARResponse struct {
 
 func (x *CARResponse) Reset() {
 	*x = CARResponse{}
-	mi := &file_compute_proto_msgTypes[7]
+	mi := &file_compute_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +510,7 @@ func (x *CARResponse) String() string {
 func (*CARResponse) ProtoMessage() {}
 
 func (x *CARResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_compute_proto_msgTypes[7]
+	mi := &file_compute_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,7 +523,7 @@ func (x *CARResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CARResponse.ProtoReflect.Descriptor instead.
 func (*CARResponse) Descriptor() ([]byte, []int) {
-	return file_compute_proto_rawDescGZIP(), []int{7}
+	return file_compute_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CARResponse) GetCar() float64 {
@@ -430,7 +542,7 @@ type TTestRequest struct {
 
 func (x *TTestRequest) Reset() {
 	*x = TTestRequest{}
-	mi := &file_compute_proto_msgTypes[8]
+	mi := &file_compute_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +554,7 @@ func (x *TTestRequest) String() string {
 func (*TTestRequest) ProtoMessage() {}
 
 func (x *TTestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_compute_proto_msgTypes[8]
+	mi := &file_compute_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +567,7 @@ func (x *TTestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TTestRequest.ProtoReflect.Descriptor instead.
 func (*TTestRequest) Descriptor() ([]byte, []int) {
-	return file_compute_proto_rawDescGZIP(), []int{8}
+	return file_compute_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TTestRequest) GetSamples() []float64 {
@@ -474,7 +586,7 @@ type TTestResponse struct {
 
 func (x *TTestResponse) Reset() {
 	*x = TTestResponse{}
-	mi := &file_compute_proto_msgTypes[9]
+	mi := &file_compute_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +598,7 @@ func (x *TTestResponse) String() string {
 func (*TTestResponse) ProtoMessage() {}
 
 func (x *TTestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_compute_proto_msgTypes[9]
+	mi := &file_compute_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +611,7 @@ func (x *TTestResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TTestResponse.ProtoReflect.Descriptor instead.
 func (*TTestResponse) Descriptor() ([]byte, []int) {
-	return file_compute_proto_rawDescGZIP(), []int{9}
+	return file_compute_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *TTestResponse) GetTStatistic() float64 {
@@ -526,7 +638,14 @@ const file_compute_proto_rawDesc = "" +
 	"\vevent_hours\x18\x04 \x01(\rR\n" +
 	"eventHours\"-\n" +
 	"\x13BuildWindowResponse\x12\x16\n" +
-	"\x06window\x18\x01 \x03(\x01R\x06window\"\x8f\x01\n" +
+	"\x06window\x18\x01 \x03(\x01R\x06window\"9\n" +
+	"\x15OLSMarketModelRequest\x12\x0f\n" +
+	"\x03r_i\x18\x01 \x03(\x01R\x02rI\x12\x0f\n" +
+	"\x03r_m\x18\x02 \x03(\x01R\x02rM\"_\n" +
+	"\x16OLSMarketModelResponse\x12\x14\n" +
+	"\x05alpha\x18\x01 \x01(\x01R\x05alpha\x12\x12\n" +
+	"\x04beta\x18\x02 \x01(\x01R\x04beta\x12\x1b\n" +
+	"\tsigma_eps\x18\x03 \x01(\x01R\bsigmaEps\"\x8f\x01\n" +
 	"\x15AbnormalReturnRequest\x12%\n" +
 	"\x0eactual_returns\x18\x01 \x03(\x01R\ractualReturns\x12%\n" +
 	"\x0emarket_returns\x18\x02 \x03(\x01R\rmarketReturns\x12\x14\n" +
@@ -543,10 +662,11 @@ const file_compute_proto_rawDesc = "" +
 	"\asamples\x18\x01 \x03(\x01R\asamples\"0\n" +
 	"\rTTestResponse\x12\x1f\n" +
 	"\vt_statistic\x18\x01 \x01(\x01R\n" +
-	"tStatistic2\x88\x03\n" +
+	"tStatistic2\xdb\x03\n" +
 	"\x0eComputeService\x12Q\n" +
 	"\x0ePercentChanges\x12\x1e.compute.PercentChangesRequest\x1a\x1f.compute.PercentChangesResponse\x12H\n" +
 	"\vBuildWindow\x12\x1b.compute.BuildWindowRequest\x1a\x1c.compute.BuildWindowResponse\x12Q\n" +
+	"\x0eOLSMarketModel\x12\x1e.compute.OLSMarketModelRequest\x1a\x1f.compute.OLSMarketModelResponse\x12Q\n" +
 	"\x0eAbnormalReturn\x12\x1e.compute.AbnormalReturnRequest\x1a\x1f.compute.AbnormalReturnResponse\x12E\n" +
 	"\x18CumulativeAbnormalReturn\x12\x13.compute.CARRequest\x1a\x14.compute.CARResponse\x12?\n" +
 	"\x0eTTestOneSample\x12\x15.compute.TTestRequest\x1a\x16.compute.TTestResponseB\x17Z\x15phantom/gen/computepbb\x06proto3"
@@ -563,35 +683,39 @@ func file_compute_proto_rawDescGZIP() []byte {
 	return file_compute_proto_rawDescData
 }
 
-var file_compute_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_compute_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_compute_proto_goTypes = []any{
 	(*PercentChangesRequest)(nil),  // 0: compute.PercentChangesRequest
 	(*PercentChangesResponse)(nil), // 1: compute.PercentChangesResponse
 	(*BuildWindowRequest)(nil),     // 2: compute.BuildWindowRequest
 	(*BuildWindowResponse)(nil),    // 3: compute.BuildWindowResponse
-	(*AbnormalReturnRequest)(nil),  // 4: compute.AbnormalReturnRequest
-	(*AbnormalReturnResponse)(nil), // 5: compute.AbnormalReturnResponse
-	(*CARRequest)(nil),             // 6: compute.CARRequest
-	(*CARResponse)(nil),            // 7: compute.CARResponse
-	(*TTestRequest)(nil),           // 8: compute.TTestRequest
-	(*TTestResponse)(nil),          // 9: compute.TTestResponse
+	(*OLSMarketModelRequest)(nil),  // 4: compute.OLSMarketModelRequest
+	(*OLSMarketModelResponse)(nil), // 5: compute.OLSMarketModelResponse
+	(*AbnormalReturnRequest)(nil),  // 6: compute.AbnormalReturnRequest
+	(*AbnormalReturnResponse)(nil), // 7: compute.AbnormalReturnResponse
+	(*CARRequest)(nil),             // 8: compute.CARRequest
+	(*CARResponse)(nil),            // 9: compute.CARResponse
+	(*TTestRequest)(nil),           // 10: compute.TTestRequest
+	(*TTestResponse)(nil),          // 11: compute.TTestResponse
 }
 var file_compute_proto_depIdxs = []int32{
-	0, // 0: compute.ComputeService.PercentChanges:input_type -> compute.PercentChangesRequest
-	2, // 1: compute.ComputeService.BuildWindow:input_type -> compute.BuildWindowRequest
-	4, // 2: compute.ComputeService.AbnormalReturn:input_type -> compute.AbnormalReturnRequest
-	6, // 3: compute.ComputeService.CumulativeAbnormalReturn:input_type -> compute.CARRequest
-	8, // 4: compute.ComputeService.TTestOneSample:input_type -> compute.TTestRequest
-	1, // 5: compute.ComputeService.PercentChanges:output_type -> compute.PercentChangesResponse
-	3, // 6: compute.ComputeService.BuildWindow:output_type -> compute.BuildWindowResponse
-	5, // 7: compute.ComputeService.AbnormalReturn:output_type -> compute.AbnormalReturnResponse
-	7, // 8: compute.ComputeService.CumulativeAbnormalReturn:output_type -> compute.CARResponse
-	9, // 9: compute.ComputeService.TTestOneSample:output_type -> compute.TTestResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: compute.ComputeService.PercentChanges:input_type -> compute.PercentChangesRequest
+	2,  // 1: compute.ComputeService.BuildWindow:input_type -> compute.BuildWindowRequest
+	4,  // 2: compute.ComputeService.OLSMarketModel:input_type -> compute.OLSMarketModelRequest
+	6,  // 3: compute.ComputeService.AbnormalReturn:input_type -> compute.AbnormalReturnRequest
+	8,  // 4: compute.ComputeService.CumulativeAbnormalReturn:input_type -> compute.CARRequest
+	10, // 5: compute.ComputeService.TTestOneSample:input_type -> compute.TTestRequest
+	1,  // 6: compute.ComputeService.PercentChanges:output_type -> compute.PercentChangesResponse
+	3,  // 7: compute.ComputeService.BuildWindow:output_type -> compute.BuildWindowResponse
+	5,  // 8: compute.ComputeService.OLSMarketModel:output_type -> compute.OLSMarketModelResponse
+	7,  // 9: compute.ComputeService.AbnormalReturn:output_type -> compute.AbnormalReturnResponse
+	9,  // 10: compute.ComputeService.CumulativeAbnormalReturn:output_type -> compute.CARResponse
+	11, // 11: compute.ComputeService.TTestOneSample:output_type -> compute.TTestResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_compute_proto_init() }
@@ -605,7 +729,7 @@ func file_compute_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_compute_proto_rawDesc), len(file_compute_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

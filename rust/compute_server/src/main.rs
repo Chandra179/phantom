@@ -44,6 +44,26 @@ impl ComputeService for ComputeServiceImpl {
         }
     }
 
+    async fn ols_market_model(
+        &self,
+        req: Request<OlsMarketModelRequest>,
+    ) -> Result<Response<OlsMarketModelResponse>, Status> {
+        let inner = req.into_inner();
+        let r_i = inner.r_i;
+        let r_m = inner.r_m;
+
+        let result =
+            std::panic::catch_unwind(move || backtesting::ols_market_model(&r_i, &r_m));
+        match result {
+            Ok((alpha, beta, sigma_eps)) => Ok(Response::new(OlsMarketModelResponse {
+                alpha,
+                beta,
+                sigma_eps,
+            })),
+            Err(_) => Err(Status::invalid_argument("ols_market_model panicked")),
+        }
+    }
+
     async fn abnormal_return(
         &self,
         req: Request<AbnormalReturnRequest>,
