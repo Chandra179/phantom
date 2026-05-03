@@ -305,10 +305,10 @@ Red→green→refactor each item. Iface + mock first, real impl after failing te
 - [x] e2e: EDGAR earnings 8-K → CAR sign matches Ball-Brown drift.
 
 ### Slice 4 — Binance crypto
-- [ ] test: `BinanceFetcher` paginate 1000 bars (recorded fixture) → impl.
-- [ ] test: rate-limit 1200 req/min → impl.
-- [ ] test: halving seed → window build → impl seed loader.
-- [ ] e2e: BTC halving 2024-04 CAR computed.
+- [x] test: `BinanceFetcher` paginate 1000 bars (recorded fixture) → impl.
+- [x] test: rate-limit 1200 req/min → impl.
+- [x] test: halving seed → window build → impl seed loader.
+- [x] e2e: BTC halving 2024-04 CAR computed.
 
 ### Slice 5 — DTW shape matching
 

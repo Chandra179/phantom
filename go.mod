@@ -3,6 +3,7 @@ module phantom
 go 1.26.1
 
 require (
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/gin-gonic/gin v1.12.0
 	github.com/parquet-go/parquet-go v0.29.0
 	golang.org/x/time v0.15.0
